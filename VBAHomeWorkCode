@@ -1,0 +1,193 @@
+Sub HomeWork2()
+
+For Each ws In Worksheets
+
+ws.Range("I1").Value = "Ticker"
+ws.Range("J1").Value = "Yearly Change"
+ws.Range("K1").Value = "Percent Change"
+ws.Range("L1").Value = "Total Stock Volume"
+
+Dim TickerTotalVolumn As Double
+TickerTotalVolumn = 0
+
+Dim Ticker_Name As String
+Dim Ticker_Open As Double
+Dim Ticker_Close As Double
+Dim YearlyChange As Double
+Dim PercentChange As Double
+Dim NextTickerStart As Double
+Dim ZeroValueCount As Double
+
+'Set the first TickerOpen Value
+Ticker_Open = ws.Cells(2, 3).Value
+
+'Define Summary_Table_Row, and have it start from Row 2
+Dim Summary_Table_Row As Integer
+Summary_Table_Row = 2
+
+'Find total Rows in worksheet
+lastrow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+'Find Total Row in each Ticker
+
+For i = 2 To lastrow
+
+    'Check if we are still within the same Ticker, if it's not..
+    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1) Then
+        
+        '===================
+        'Assign Yealy Change
+        '===================
+        'Assign the TicketClose value when find the next Ticker
+        Ticker_Close = ws.Cells(i, 6).Value
+        
+        
+        '******Test if there is Tickers have no change between open and close value******
+        If Ticker_Open = 0 Or Ticker_Close = 0 Then
+            ZeroValueCount = ZeroValueCount + 1
+        Else
+        
+        'Calculate the yearly change using the existing Ticker_Open - Ticker_Close
+        'Then print the yearly change value to the Summary_Table, and assign color
+        YearlyChange = Ticker_Close - Ticker_Open
+        ws.Range("J" & Summary_Table_Row).Value = YearlyChange
+            If YearlyChange < 0 Then
+                ws.Range("J" & Summary_Table_Row).Interior.Color = vbRed
+            ElseIf YearlyChange = 0 Then
+                ws.Range("J" & Summary_Table_Row).Interior.Color = vbYellow
+            Else
+                ws.Range("J" & Summary_Table_Row).Interior.Color = vbGreen
+               
+            End If
+        
+        '=====================
+        'Assign Percent Change
+        '=====================
+        PercentChange = (Ticker_Close - Ticker_Open) / Ticker_Open
+        ws.Range("K" & Summary_Table_Row).Value = PercentChange
+        ws.Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
+        
+        'Set the Ticker_open value again,in ready to use next time
+        NextTickerStart = i + 1
+        Ticker_Open = ws.Cells(NextTickerStart, 3).Value
+        
+        '===================================
+        'Add up Total Volumn for each Ticker
+        '===================================
+        'Set the Ticker Name
+        Ticker_Name = ws.Cells(i, 1).Value
+        'Print the Ticker name in the SummaryTable
+        ws.Range("I" & Summary_Table_Row).Value = Ticker_Name
+    
+        'Addup the Volumn for each Ticker
+        TickerTotalVolumn = TickerTotalVolumn + ws.Cells(i, 7)
+        'Print the Total Volumn to the SummaryTable
+        ws.Range("L" & Summary_Table_Row).Value = TickerTotalVolumn
+    
+        'Add 1 to the row
+        Summary_Table_Row = Summary_Table_Row + 1
+    
+        'Reset Total for the next brand
+        TickerTotalVolumn = 0
+        
+        
+        End If
+    
+    Else
+        'Add to Ticker Total Volumn
+        TickerTotalVolumn = TickerTotalVolumn + ws.Cells(i, 7)
+        
+    End If
+
+Next i
+
+
+Next ws
+
+MsgBox ("Completed, there are " & ZeroValueCount & " stock skipped due to ZERO value open or close value!")
+
+
+'================================================
+'           CHARLLENGE CODE
+'================================================
+
+For Each ws In Worksheets
+
+
+ws.Range("O2").Value = "Greatest % Increase"
+ws.Range("O3").Value = "Greatest % Decrease"
+ws.Range("O4").Value = "Greatest Total volumn"
+ws.Range("P1").Value = "Ticker"
+ws.Range("Q1").Value = "Value"
+
+Dim GreatestIncrease As Double
+Dim GreatestDecrease As Double
+Dim GreatestTotalVolumn As Double
+
+GreatestIncrease = ws.Cells(2, 11).Value
+GreatestDecrease = ws.Cells(2, 11).Value
+GreatestTotalVolumn = ws.Cells(2, 12).Value
+
+'Count how many rows in Summary table
+Dim LastRowSummary As Integer
+LastRowSummary = ws.Cells(Rows.Count, 10).End(xlUp).Row
+
+'----Greatest Increase----
+
+'Find out the greatest number more than 0, and input in summary table 2
+For i = 2 To LastRowSummary
+        If ws.Cells(i + 1, 11).Value > 0 And GreatestIncrease < ws.Cells(i + 1, 11).Value Then
+            GreatestIncrease = ws.Cells(i + 1, 11)
+        End If
+Next i
+    ws.Range("Q2").Value = GreatestIncrease
+    ws.Range("Q2").NumberFormat = "0.00%"
+    
+'Find the ticker name with the Greatest Increase, then input ticker name in summary table 2.
+For i = 2 To LastRowSummary
+        If ws.Cells(i, 11).Value = GreatestIncrease Then
+            ws.Range("P2").Value = Cells(i, 9).Value
+            
+        End If
+Next i
+
+'----Greatest Decrease----
+
+'Find out the smallest number less than 0, and input in summary table 2
+For i = 2 To LastRowSummary
+    If ws.Cells(i + 1, 11).Value < 0 And GreatestDecrease > ws.Cells(i + 1, 11).Value Then
+        GreatestDecrease = ws.Cells(i + 1, 11)
+    End If
+Next i
+    ws.Range("Q3").Value = GreatestDecrease
+    ws.Range("Q3").NumberFormat = "0.00%"
+
+'Find the ticker name with the Greatest Increase, then input ticker name in summary table 2.
+For i = 2 To LastRowSummary
+        If ws.Cells(i, 11).Value = GreatestDecrease Then
+            ws.Range("P3").Value = ws.Cells(i, 9).Value
+        End If
+Next i
+    
+        
+'----Greatest Total Volumn----
+
+'Find out the last number in total volumn and input into summary table
+For i = 2 To LastRowSummary
+    If GreatestTotalVolumn < ws.Cells(i + 1, 12).Value Then
+        GreatestTotalVolumn = ws.Cells(i + 1, 12).Value
+    End If
+Next i
+    ws.Range("Q4").Value = GreatestTotalVolumn
+    
+'Find the ticker name with the greatest total volumn, then input ticker name in summary table 2.
+For i = 2 To LastRowSummary
+    If ws.Cells(i, 12).Value = GreatestTotalVolumn Then
+        ws.Range("P4").Value = ws.Cells(i, 9).Value
+    End If
+Next i
+
+Next ws
+
+End Sub
+
