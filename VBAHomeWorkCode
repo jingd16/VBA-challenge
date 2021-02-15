@@ -42,7 +42,7 @@ For i = 2 To lastrow
         Ticker_Close = ws.Cells(i, 6).Value
         
         
-        '******Test if there is Tickers have no change between open and close value******
+        '******Test if there is Tickers have ZERO open or close value******
         If Ticker_Open = 0 Or Ticker_Close = 0 Then
             ZeroValueCount = ZeroValueCount + 1
         Else
@@ -104,7 +104,8 @@ Next i
 
 Next ws
 
-MsgBox ("Completed, there are " & ZeroValueCount & " stock skipped due to ZERO value open or close value!")
+'Once the summary table is completed, show a messsage box to let client know how many line of data is skipped and prompt them to check if data is accurate.
+MsgBox ("Completed, there are " & ZeroValueCount & " stock skipped due to ZERO open or close value! Please check if data is accurate.")
 
 
 '================================================
@@ -190,4 +191,6 @@ Next i
 Next ws
 
 End Sub
+
+
 
