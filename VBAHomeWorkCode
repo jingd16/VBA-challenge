@@ -104,7 +104,6 @@ Next i
 
 Next ws
 
-'Once the summary table is completed, show a messsage box to let client know how many line of data is skipped and prompt them to check if data is accurate.
 MsgBox ("Completed, there are " & ZeroValueCount & " stock skipped due to ZERO open or close value! Please check if data is accurate.")
 
 
@@ -147,7 +146,7 @@ Next i
 'Find the ticker name with the Greatest Increase, then input ticker name in summary table 2.
 For i = 2 To LastRowSummary
         If ws.Cells(i, 11).Value = GreatestIncrease Then
-            ws.Range("P2").Value = Cells(i, 9).Value
+            ws.Range("P2").Value = ws.Cells(i, 9).Value
             
         End If
 Next i
